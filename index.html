@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator - Enhanced Relative Grading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .difficulty-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            min-width: 160px;
+        }
+        
+        .difficulty-input span {
+            color: #495057;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        
+        .difficulty-input input {
+            padding: 4px 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #495057;
+            width: 60px !important;
+            text-align: center;
+        }
+        
+        .difficulty-input input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .difficulty-control {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .difficulty-control h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .slider-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        
+        .difficulty-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #28a745 0%, #ffc107 50%, #dc3545 100%);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .difficulty-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .difficulty-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .difficulty-value {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .difficulty-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        
+        .difficulty-info {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .gpa-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .gpa-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .gpa-text {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .course-analysis {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .course-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .course-card.lab-course {
+            border-left-color: #28a745;
+        }
+        
+        .course-card.theory-course {
+            border-left-color: #17a2b8;
+        }
+        
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .course-title {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .course-type-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .lab-badge {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .theory-badge {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .grade-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .grade-S { background: #28a745; color: white; }
+        .grade-A { background: #17a2b8; color: white; }
+        .grade-B { background: #ffc107; color: black; }
+        .grade-C { background: #fd7e14; color: white; }
+        .grade-D { background: #dc3545; color: white; }
+        
+        .grade-ineligible {
+            background: #6c757d;
+            color: white;
+            position: relative;
+        }
+        
+        .grade-ineligible::after {
+            content: " (Ineligible)";
+            font-size: 0.7em;
+            opacity: 0.8;
+        }
+        
+        .score-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .methodology {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .methodology h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .methodology ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .methodology li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .methodology li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .grading-info {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .grading-types {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .grading-type {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .s-grade-criteria {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .s-grade-criteria h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Enhanced GPA Calculator</h1>
+            <p>Lab (Absolute) vs Theory (Relative) Grading System with Competition Difficulty</p>
+        </div>
+        
+        <div class="content">
+            <div class="grading-info">
+                <h3>📋 Grading System Information</h3>
+                <div class="grading-types">
+                    <div class="grading-type">
+                        <h4>🧪 Lab Courses (ending with 'P')</h4>
+                        <p><strong>Absolute Grading:</strong> Fixed score thresholds</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>S: 90%+ overall</li>
+                            <li>A: 80-89%</li>
+                            <li>B: 70-79%</li>
+                            <li>C: 60-69%</li>
+                        </ul>
+                    </div>
+                    <div class="grading-type">
+                        <h4>📚 Theory Courses (ending with 'L')</h4>
+                        <p><strong>Relative Grading:</strong> Based on class rank & difficulty</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Considers class competition level</li>
+                            <li>Adjusts for teacher strictness</li>
+                            <li>Top 10% get S grade (~6-7 students)</li>
+                            <li>Performance consistency matters</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="s-grade-criteria">
+                    <h4>⭐ S Grade Eligibility Criteria</h4>
+                    <p><strong>Important:</strong> To be eligible for S grade, a student must score <strong>at least 80%</strong> in their overall performance, regardless of relative ranking. Students below 80% cannot receive S grade even if they rank in top 10%.</p>
+                </div>
+            </div>
+            
+            <div class="input-section">
+                <h2>📊 Input Your Marks Data</h2>
+                <textarea id="marksInput" placeholder="Paste your complete marks data here from the university website..."></textarea>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="calculateGPA()">Calculate GPA</button>
+                    <button class="btn-secondary" onclick="loadSampleData()">Load Sample Data</button>
+                    <button class="btn-secondary" onclick="clearData()">Clear</button>
+                </div>
+            </div>
+            
+            <div class="results" id="results">
+                <div class="gpa-display">
+                    <div class="gpa-number" id="gpaNumber">0.00</div>
+                    <div class="gpa-text">Estimated GPA</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCourses">0</div>
+                        <div class="stat-label">Total Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgScore">0%</div>
+                        <div class="stat-label">Average Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="labCourses">0</div>
+                        <div class="stat-label">Lab Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="theoryCourses">0</div>
+                        <div class="stat-label">Theory Courses</div>
+                    </div>
+                </div>
+                
+                <div class="course-analysis" id="courseAnalysis"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Grade point mapping
+        const gradePoints = {
+            'S': 10, 'A': 9, 'B': 8, 'C': 7, 'D': 6, 'E': 5, 'F': 0
+        };
+
+        function isLabCourse(courseCode) {
+            if (!courseCode) return false;
+            const cleanCode = courseCode.toString().trim();
+            console.log('isLabCourse check:', {
+                original: courseCode,
+                cleaned: cleanCode,
+                chars: Array.from(cleanCode).map(c => c.charCodeAt(0))
+            });
+            return cleanCode.endsWith('P');
+        }
+
+        function isTheoryCourse(courseCode) {
+            if (!courseCode) return false;
+            const cleanCode = courseCode.toString().trim();
+            console.log('isTheoryCourse check:', {
+                original: courseCode,
+                cleaned: cleanCode,
+                chars: Array.from(cleanCode).map(c => c.charCodeAt(0))
+            });
+            return cleanCode.endsWith('L');
+        }
+
+        function parseMarksData(text) {
+            const courses = [];
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            let currentCourse = null;
+            let inMarksSection = false;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Check if this is a course header line
+                if (line.match(/^\d+\s+VL\d+/)) {
+                    if (currentCourse) {
+                        courses.push(currentCourse);
+                    }
+                    
+                    const parts = line.split('\t').filter(p => p.trim());
+                    console.log('Parsing course line:', line);
+                    console.log('Parts:', parts);
+                    
+                    // Clean the course code
+                    const courseCode = parts[2] ? parts[2].toString().trim() : '';
+                    console.log('Course code after cleaning:', {
+                        original: parts[2],
+                        cleaned: courseCode,
+                        chars: Array.from(courseCode).map(c => c.charCodeAt(0))
+                    });
+                    
+                    currentCourse = {
+                        classNbr: parts[1],
+                        courseCode: courseCode,
+                        courseTitle: parts[3],
+                        courseType: parts[4],
+                        faculty: parts[6],
+                        assessments: [],
+                        totalWeightage: 0,
+                        totalScore: 0
+                    };
+                    
+                    console.log('Created course object:', currentCourse);
+                    console.log('Is theory course:', isTheoryCourse(currentCourse.courseCode));
+                    
+                    inMarksSection = false;
+                }
+                
+                // Check if we're entering marks section
+                if (line.includes('Mark Title') && line.includes('Max. Mark')) {
+                    inMarksSection = true;
+                    continue;
+                }
+                
+                // Parse assessment data
+                if (inMarksSection && currentCourse && line.match(/^\d+\s+/)) {
+                    const parts = line.split('\t').filter(p => p.trim());
+                    if (parts.length >= 6) {
+                        const assessment = {
+                            title: parts[1],
+                            maxMark: parseFloat(parts[2]),
+                            weightage: parseFloat(parts[3]),
+                            status: parts[4],
+                            scoredMark: parseFloat(parts[5]),
+                            weightageScore: parseFloat(parts[6])
+                        };
+                        
+                        currentCourse.assessments.push(assessment);
+                        currentCourse.totalWeightage += assessment.weightage;
+                        currentCourse.totalScore += assessment.weightageScore;
+                    }
+                }
+            }
+            
+            if (currentCourse) {
+                courses.push(currentCourse);
+            }
+            
+            console.log('Parsed courses:', courses);
+            return courses;
+        }
+
+        function estimateGradeForLab(course) {
+            // Absolute grading for lab courses
+            const percentage = (course.totalScore / 100) * 100;
+            
+            let grade = 'D';
+            if (percentage >= 90) grade = 'S';
+            else if (percentage >= 80) grade = 'A';
+            else if (percentage >= 70) grade = 'B';
+            else if (percentage >= 60) grade = 'C';
+            
+            return {
+                grade: grade,
+                percentage: percentage.toFixed(1),
+                gradingType: 'Absolute',
+                reasoning: `Lab course: ${percentage.toFixed(1)}% overall score`,
+                sGradeEligible: percentage >= 80
+            };
+        }
+
+        function estimateGradeForTheory(course) {
+            // Enhanced relative grading for theory courses with difficulty adjustment
+            const totalScore = course.totalScore;
+            const percentage = (totalScore / 100) * 100;
+            
+            // Get the stored difficulty value
+            const difficulties = JSON.parse(localStorage.getItem('courseDifficulties') || '{}');
+            const difficultyValue = difficulties[course.courseCode] !== undefined ? 
+                difficulties[course.courseCode] : 0.5;
+            
+            // Get final exam performance
+            const finalExam = course.assessments.find(a => 
+                a.title.toLowerCase().includes('final') && 
+                a.weightage >= 35
+            );
+            
+            let finalExamPercentage = 0;
+            if (finalExam) {
+                finalExamPercentage = (finalExam.scoredMark / finalExam.maxMark) * 100;
+            }
+            
+            // Calculate consistency across non-final assessments
+            const otherAssessments = course.assessments.filter(a => 
+                !a.title.toLowerCase().includes('final')
+            );
+            
+            const consistencyScores = otherAssessments.map(a => 
+                (a.scoredMark / a.maxMark) * 100
+            );
+            
+            const avgConsistency = consistencyScores.length > 0 ? 
+                consistencyScores.reduce((a, b) => a + b, 0) / consistencyScores.length : 0;
+            
+            // Difficulty-based adjustment factor
+            // 0 = -20% adjustment
+            // 0.5 = no adjustment
+            // 1 = +20% adjustment
+            const adjustmentPercentage = (difficultyValue - 0.5) * 40; // -20% to +20% range
+            const adjustedScore = percentage * (1 + (adjustmentPercentage / 100));
+            
+            // Competition bonus based on performance and difficulty
+            let competitionBonus = 0;
+            if (finalExamPercentage >= 80 && avgConsistency >= 75) {
+                competitionBonus = 5 * difficultyValue; // Up to 5 points bonus
+            }
+            if (finalExamPercentage >= 90 && avgConsistency >= 85) {
+                competitionBonus = 10 * difficultyValue; // Up to 10 points bonus
+            }
+            
+            // Final adjusted score including competition bonus
+            const finalAdjustedScore = adjustedScore + competitionBonus;
+            
+            // Check S grade eligibility (must have 80% raw score)
+            const sGradeEligible = percentage >= 80;
+            
+            let grade = 'C';
+            let reasoning = '';
+            
+            // Dynamic thresholds based on difficulty
+            // At 0 difficulty: thresholds increase by 5 points
+            // At 0.5 difficulty: no change
+            // At 1 difficulty: thresholds decrease by 5 points
+            const difficultyOffset = (0.5 - difficultyValue) * 10; // ±5 points
+            
+            const sThreshold = 85 + difficultyOffset;
+            const aThreshold = 75 + difficultyOffset;
+            const bThreshold = 65 + difficultyOffset;
+            const cThreshold = 55 + difficultyOffset;
+            
+            // Format the difficulty effect for display
+            const difficultyEffect = adjustmentPercentage >= 0 ? 
+                `+${adjustmentPercentage.toFixed(1)}%` : 
+                `${adjustmentPercentage.toFixed(1)}%`;
+            
+            if (finalAdjustedScore >= sThreshold && sGradeEligible) {
+                grade = 'S';
+                reasoning = `Excellent performance: ${percentage.toFixed(1)}% (${difficultyEffect} adjustment, final: ${finalAdjustedScore.toFixed(1)}%), eligible for S grade`;
+            } else if (finalAdjustedScore >= sThreshold && !sGradeEligible) {
+                grade = 'A';
+                reasoning = `High performance: ${percentage.toFixed(1)}% (${difficultyEffect} adjustment, final: ${finalAdjustedScore.toFixed(1)}%), but ineligible for S (below 80% raw)`;
+            } else if (finalAdjustedScore >= aThreshold) {
+                grade = 'A';
+                reasoning = `Good performance: ${percentage.toFixed(1)}% (${difficultyEffect} adjustment, final: ${finalAdjustedScore.toFixed(1)}%)`;
+            } else if (finalAdjustedScore >= bThreshold) {
+                grade = 'B';
+                reasoning = `Above average: ${percentage.toFixed(1)}% (${difficultyEffect} adjustment, final: ${finalAdjustedScore.toFixed(1)}%)`;
+            } else if (finalAdjustedScore >= cThreshold) {
+                grade = 'C';
+                reasoning = `Average performance: ${percentage.toFixed(1)}% (${difficultyEffect} adjustment, final: ${finalAdjustedScore.toFixed(1)}%)`;
+            } else {
+                grade = 'D';
+                reasoning = `Below average: ${percentage.toFixed(1)}% (${difficultyEffect} adjustment, final: ${finalAdjustedScore.toFixed(1)}%)`;
+            }
+            
+            return {
+                grade: grade,
+                percentage: percentage.toFixed(1),
+                finalExamPercentage: finalExamPercentage.toFixed(1),
+                consistency: avgConsistency.toFixed(1),
+                adjustedScore: finalAdjustedScore.toFixed(1),
+                difficultyLevel: difficultyValue,
+                sGradeEligible: sGradeEligible,
+                gradingType: 'Relative',
+                reasoning: reasoning
+            };
+        }
+
+        function estimateGrade(course) {
+            if (isLabCourse(course.courseCode)) {
+                return estimateGradeForLab(course);
+            } else if (isTheoryCourse(course.courseCode)) {
+                return estimateGradeForTheory(course);
+            } else {
+                // For non-lab, non-theory courses, use absolute grading
+                return estimateGradeForLab(course);
+            }
+        }
+
+        function calculateGPA(shouldScroll = true) {
+            const input = document.getElementById('marksInput').value;
+            if (!input.trim()) {
+                alert('Please paste your marks data first!');
+                return;
+            }
+            
+            try {
+                const courses = parseMarksData(input);
+                if (courses.length === 0) {
+                    alert('No valid course data found. Please check your input format.');
+                    return;
+                }
+                
+                let totalGradePoints = 0;
+                let totalCredits = 0;
+                let labCourses = 0, theoryCourses = 0;
+                let totalPercentage = 0;
+                
+                const courseAnalysis = document.getElementById('courseAnalysis');
+                courseAnalysis.innerHTML = '';
+                
+                courses.forEach(course => {
+                    const gradeInfo = estimateGrade(course);
+                    const credits = getCourseCredits(course.courseType, course.courseTitle);
+                    
+                    totalGradePoints += gradePoints[gradeInfo.grade] * credits;
+                    totalCredits += credits;
+                    totalPercentage += parseFloat(gradeInfo.percentage);
+                    
+                    if (isLabCourse(course.courseCode)) {
+                        labCourses++;
+                    } else {
+                        theoryCourses++;
+                    }
+                    
+                    // Create course card
+                    const courseCard = createCourseCard(course, gradeInfo, credits);
+                    courseAnalysis.appendChild(courseCard);
+                });
+                
+                const gpa = totalCredits > 0 ? (totalGradePoints / totalCredits).toFixed(2) : '0.00';
+                const avgScore = (totalPercentage / courses.length).toFixed(1);
+                
+                // Update display
+                document.getElementById('gpaNumber').textContent = gpa;
+                document.getElementById('totalCourses').textContent = courses.length;
+                document.getElementById('avgScore').textContent = avgScore + '%';
+                document.getElementById('labCourses').textContent = labCourses;
+                document.getElementById('theoryCourses').textContent = theoryCourses;
+                document.getElementById('results').style.display = 'block';
+                
+                // Only scroll into view on initial calculation
+                if (shouldScroll) {
+                    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                }
+                
+            } catch (error) {
+                console.error('Error parsing data:', error);
+                alert('Error parsing the data. Please check the format and try again.');
+            }
+        }
+
+        function getCourseCredits(courseType, courseTitle) {
+            if (courseType && courseType.toLowerCase().includes('lab')) {
+                return 2;
+            } else if (courseTitle && courseTitle.toLowerCase().includes('soft skill')) {
+                return 1;
+            } else {
+                return 3;
+            }
+        }
+
+        function createCourseCard(course, gradeInfo, credits) {
+            console.log('Creating card for course:', course.courseCode);
+            const isLab = isLabCourse(course.courseCode);
+            const isTheory = isTheoryCourse(course.courseCode);
+            
+            const card = document.createElement('div');
+            card.className = `course-card ${isLab ? 'lab-course' : isTheory ? 'theory-course' : 'other-course'}`;
+            
+            const typeInfo = isLab ? 
+                '<span class="course-type-badge lab-badge">🧪 LAB (Absolute)</span>' :
+                isTheory ? 
+                '<span class="course-type-badge theory-badge">📚 THEORY (Relative)</span>' :
+                '<span class="course-type-badge">📖 REGULAR</span>';
+            
+            let difficultyControl = '';
+            if (isTheory) {
+                // Get stored difficulty value or use default
+                const difficulties = JSON.parse(localStorage.getItem('courseDifficulties') || '{}');
+                const currentDifficulty = difficulties[course.courseCode] !== undefined ? 
+                    difficulties[course.courseCode] : 0.5;
+                
+                difficultyControl = `
+                    <div class="difficulty-input" style="display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 4px 8px; border-radius: 8px; border: 1px solid #dee2e6; min-width: 160px;">
+                        <span style="color: #495057; font-size: 0.9em; white-space: nowrap;" title="Course Difficulty (0 = Easy, 0.5 = Normal, 1 = Hard)">Difficulty:</span>
+                        <input type="number" 
+                               class="course-difficulty" 
+                               min="0" 
+                               max="1" 
+                               step="0.1" 
+                               value="${currentDifficulty}"
+                               data-course="${course.courseCode}"
+                               style="padding: 4px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9em; color: #495057; width: 60px; text-align: center;"
+                               oninput="updateDifficulty(this)">
+                    </div>
+                `;
+            }
+            
+            let scoreDetails = `
+                <div class="score-details">
+                    <div class="score-item">
+                        <span>Overall Score:</span>
+                        <span><strong>${gradeInfo.percentage}%</strong></span>
+                    </div>
+                    <div class="score-item">
+                        <span>Grading Type:</span>
+                        <span><strong>${isTheory ? 'Relative' : 'Absolute'}</strong></span>
+                    </div>
+                    <div class="score-item">
+                        <span>Total Weightage Score:</span>
+                        <span><strong>${course.totalScore.toFixed(1)}/100</strong></span>
+                    </div>
+            `;
+            
+            if (isTheory && gradeInfo.finalExamPercentage) {
+                scoreDetails += `
+                    <div class="score-item">
+                        <span>Final Exam:</span>
+                        <span><strong>${gradeInfo.finalExamPercentage}%</strong></span>
+                    </div>
+                    <div class="score-item">
+                        <span>Consistency:</span>
+                        <span><strong>${gradeInfo.consistency}%</strong></span>
+                    </div>
+                    <div class="score-item">
+                        <span>Adjusted Score:</span>
+                        <span><strong>${gradeInfo.adjustedScore}%</strong></span>
+                    </div>
+                `;
+            }
+            
+            scoreDetails += '</div>';
+            
+            card.innerHTML = `
+                <div class="course-header">
+                    <div>
+                        <div class="course-title">${course.courseCode} - ${course.courseTitle}</div>
+                        <div style="color: #6c757d; font-size: 0.9em; margin-top: 5px;">
+                            ${course.courseType} • ${course.faculty} • ${credits} Credits ${typeInfo}
+                        </div>
+                    </div>
+                    <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                        ${difficultyControl}
+                        <div class="grade-badge grade-${gradeInfo.grade}">
+                            ${gradeInfo.grade} (${gradePoints[gradeInfo.grade]}.0)
+                        </div>
+                    </div>
+                </div>
+                <div style="margin: 15px 0; padding: 10px; background: #e9ecef; border-radius: 8px; font-size: 0.9em;">
+                    <strong>Analysis:</strong> ${gradeInfo.reasoning}
+                </div>
+                ${scoreDetails}
+            `;
+            
+            return card;
+        }
+
+        function updateDifficulty(input) {
+            const courseCode = input.dataset.course;
+            let value = parseFloat(input.value);
+            
+            // Ensure value is between 0 and 1
+            value = Math.max(0, Math.min(1, value));
+            input.value = value.toFixed(1);
+            
+            // Store the difficulty value in localStorage
+            const difficulties = JSON.parse(localStorage.getItem('courseDifficulties') || '{}');
+            difficulties[courseCode] = value;
+            localStorage.setItem('courseDifficulties', JSON.stringify(difficulties));
+            
+            console.log('Stored difficulty for', courseCode, ':', value);
+            
+            // Prevent immediate recalculation if the input is still being edited
+            clearTimeout(input._timeout);
+            input._timeout = setTimeout(() => {
+                calculateGPA(false); // Recalculate without scrolling
+            }, 300);
+        }
+
+        function loadSampleData() {
+            const sampleData = `Sl.No. 	ClassNbr 	Course Code 	Course Title 	Course Type 	Course System 	Faculty 	Slot 	Course Mode
+1 	VL2024250502877 	BCSE301P 	Software Engineering Lab 	Lab Only 	CBCS 	DEEPA.K 	L27+L28 	LBC
+Sl.No. 	Mark Title 	Max. Mark 	Weightage % 	Status 	Scored Mark 	Weightage Mark 	Remark
+1 	Assessment - 1 	10 	10 	Present 	7.0 	7 	
+2 	Assessment - 2 	10 	10 	Present 	8.0 	8 	
+3 	Assessment - 3 	10 	10 	Present 	8.0 	8 	
+4 	Assessment - 4 	10 	10 	Present 	8.0 	8 	
+5 	Assessment - 5 	20 	20 	Present 	16.0 	16 	
+6 	Final Assessment Test 	50 	40 	Present 	45.0 	36 	
+2 	VL2024250502235 	BCSE309L 	Cryptography and Network Security 	Theory Only 	CBCS 	RAMAN.K 	G2+TG2 	CBL09
+Sl.No. 	Mark Title 	Max. Mark 	Weightage % 	Status 	Scored Mark 	Weightage Mark 	Remark
+1 	Assignment - I 	10 	10 	Present 	9.0 	9 	
+2 	Continuous Assessment Test - I 	50 	15 	Present 	45.0 	13.5 	
+3 	Continuous Assessment Test - II 	50 	15 	Present 	42.0 	12.6 	
+4 	Quiz - I 	10 	10 	Present 	9.0 	9 	
+5 	Quiz - II 	10 	10 	Present 	8.0 	8 	
+6 	Final Assessment Test 	100 	40 	Present 	85.0 	34`;
+            
+            document.getElementById('marksInput').value = sampleData;
+        }
+
+        function clearData() {
+            document.getElementById('marksInput').value = '';
+            document.getElementById('results').style.display = 'none';
+            // Clear stored difficulties when clearing data
+            localStorage.removeItem('courseDifficulties');
+        }
+
+        // Auto-load sample data
+        window.onload = function() {
+            // Clear stored difficulties when loading new sample data
+            localStorage.removeItem('courseDifficulties');
+            loadSampleData();
+        };
+    </script>
+</body>
+</html>
