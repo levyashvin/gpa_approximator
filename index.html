@@ -800,7 +800,7 @@
                 
                 courses.forEach(course => {
                     const gradeInfo = estimateGrade(course);
-                    const credits = getCourseCredits(course.courseType, course.courseTitle);
+                    const credits = getCourseCredits(course.courseType, course.courseTitle, course.courseCode, courses);
                     
                     totalGradePoints += gradePoints[gradeInfo.grade] * credits;
                     totalCredits += credits;
@@ -839,14 +839,57 @@
             }
         }
 
-        function getCourseCredits(courseType, courseTitle) {
-            if (courseType && courseType.toLowerCase().includes('lab')) {
-                return 2;
-            } else if (courseTitle && courseTitle.toLowerCase().includes('soft skill')) {
-                return 1;
-            } else {
-                return 3;
+        function getCourseCredits(courseType, courseTitle, courseCode, allCourses) {
+            // First check if there's a user-defined credit value stored
+            const userCredits = JSON.parse(localStorage.getItem('userDefinedCredits') || '{}');
+            if (userCredits[courseCode]) {
+                return parseFloat(userCredits[courseCode]);
             }
+
+            // Lab courses are always 1 credit
+            if (courseType && courseType.toLowerCase().includes('lab')) {
+                return 1;
+            }
+
+            // Soft skill courses are 1.5 credits
+            if (courseType && courseType.toLowerCase().includes('soft skill')) {
+                return 1.5;
+            }
+
+            // For theory courses, check if there's a corresponding lab course
+            if (isTheoryCourse(courseCode)) {
+                const hasLabCourse = allCourses.some(course => 
+                    course.courseCode !== courseCode && // Not the same course
+                    course.courseCode.startsWith(courseCode.slice(0, -1)) && // Same base code
+                    isLabCourse(course.courseCode) // Is a lab course
+                );
+                
+                // If there's a lab course, theory course is likely 3 credits
+                // If no lab course, assume 4 credits as default for theory
+                return hasLabCourse ? 3 : 4;
+            }
+
+            // Default case: assume 3 credits
+            return 3;
+        }
+
+        function updateCredits(input) {
+            const courseCode = input.dataset.course;
+            let value = parseFloat(input.value);
+            
+            // Ensure value is between 1 and 4
+            value = Math.max(1, Math.min(4, value));
+            // Round to nearest 0.5
+            value = Math.round(value * 2) / 2;
+            input.value = value;
+            
+            // Store the credit value in localStorage
+            const userCredits = JSON.parse(localStorage.getItem('userDefinedCredits') || '{}');
+            userCredits[courseCode] = value;
+            localStorage.setItem('userDefinedCredits', JSON.stringify(userCredits));
+            
+            // Recalculate GPA without scrolling
+            calculateGPA(false);
         }
 
         function createCourseCard(course, gradeInfo, credits) {
@@ -885,6 +928,22 @@
                     </div>
                 `;
             }
+
+            // Add credit control
+            const creditControl = `
+                <div class="credit-input" style="display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 4px 8px; border-radius: 8px; border: 1px solid #dee2e6;">
+                    <span style="color: #495057; font-size: 0.9em; white-space: nowrap;">Credits:</span>
+                    <input type="number" 
+                           class="course-credit" 
+                           min="1" 
+                           max="4" 
+                           step="0.5" 
+                           value="${credits}"
+                           data-course="${course.courseCode}"
+                           style="padding: 4px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9em; color: #495057; width: 60px; text-align: center;"
+                           oninput="updateCredits(this)">
+                </div>
+            `;
             
             let scoreDetails = `
                 <div class="score-details">
@@ -900,26 +959,8 @@
                         <span>Total Weightage Score:</span>
                         <span><strong>${course.totalScore.toFixed(1)}/100</strong></span>
                     </div>
+                </div>
             `;
-            
-            if (isTheory && gradeInfo.finalExamPercentage) {
-                scoreDetails += `
-                    <div class="score-item">
-                        <span>Final Exam:</span>
-                        <span><strong>${gradeInfo.finalExamPercentage}%</strong></span>
-                    </div>
-                    <div class="score-item">
-                        <span>Consistency:</span>
-                        <span><strong>${gradeInfo.consistency}%</strong></span>
-                    </div>
-                    <div class="score-item">
-                        <span>Adjusted Score:</span>
-                        <span><strong>${gradeInfo.adjustedScore}%</strong></span>
-                    </div>
-                `;
-            }
-            
-            scoreDetails += '</div>';
             
             card.innerHTML = `
                 <div class="course-header">
@@ -930,6 +971,7 @@
                         </div>
                     </div>
                     <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                        ${creditControl}
                         ${difficultyControl}
                         <div class="grade-badge grade-${gradeInfo.grade}">
                             ${gradeInfo.grade} (${gradePoints[gradeInfo.grade]}.0)
