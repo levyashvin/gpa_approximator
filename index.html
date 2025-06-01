@@ -520,6 +520,8 @@
                     </div>
                 </div>
                 
+            <br>
+
                 <div class="course-analysis" id="courseAnalysis"></div>
             </div>
         </div>
@@ -562,6 +564,11 @@
             
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
+                
+                // Skip total lines that appear in the extended format
+                if (line.startsWith('Total:')) {
+                    continue;
+                }
                 
                 // Check if this is a course header line
                 if (line.match(/^\d+\s+VL\d+/)) {
@@ -769,77 +776,38 @@
             }
         }
 
-        function calculateGPA(shouldScroll = true) {
-            const input = document.getElementById('marksInput').value;
-            if (!input.trim()) {
-                alert('Please paste your marks data first!');
-                return;
+        function getCourseCredits(courseType, courseTitle, courseCode, allCourses) {
+            // First check if there's a user-defined credit value stored
+            const userCredits = JSON.parse(localStorage.getItem('userDefinedCredits') || '{}');
+            if (userCredits[courseCode]) {
+                return parseFloat(userCredits[courseCode]);
             }
-            
-            try {
-                const courses = parseMarksData(input);
-                if (courses.length === 0) {
-                    alert('No valid course data found. Please check your input format.');
-                    return;
-                }
-                
-                let totalGradePoints = 0;
-                let totalCredits = 0;
-                let labCourses = 0, theoryCourses = 0;
-                let totalPercentage = 0;
-                
-                const courseAnalysis = document.getElementById('courseAnalysis');
-                courseAnalysis.innerHTML = '';
-                
-                courses.forEach(course => {
-                    const gradeInfo = estimateGrade(course);
-                    const credits = getCourseCredits(course.courseType, course.courseTitle);
-                    
-                    totalGradePoints += gradePoints[gradeInfo.grade] * credits;
-                    totalCredits += credits;
-                    totalPercentage += parseFloat(gradeInfo.percentage);
-                    
-                    if (isLabCourse(course.courseCode)) {
-                        labCourses++;
-                    } else {
-                        theoryCourses++;
-                    }
-                    
-                    // Create course card
-                    const courseCard = createCourseCard(course, gradeInfo, credits);
-                    courseAnalysis.appendChild(courseCard);
-                });
-                
-                const gpa = totalCredits > 0 ? (totalGradePoints / totalCredits).toFixed(2) : '0.00';
-                const avgScore = (totalPercentage / courses.length).toFixed(1);
-                
-                // Update display
-                document.getElementById('gpaNumber').textContent = gpa;
-                document.getElementById('totalCourses').textContent = courses.length;
-                document.getElementById('avgScore').textContent = avgScore + '%';
-                document.getElementById('labCourses').textContent = labCourses;
-                document.getElementById('theoryCourses').textContent = theoryCourses;
-                document.getElementById('results').style.display = 'block';
-                
-                // Only scroll into view on initial calculation
-                if (shouldScroll) {
-                    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-                }
-                
-            } catch (error) {
-                console.error('Error parsing data:', error);
-                alert('Error parsing the data. Please check the format and try again.');
-            }
-        }
 
-        function getCourseCredits(courseType, courseTitle) {
+            // Lab courses are always 1 credit
             if (courseType && courseType.toLowerCase().includes('lab')) {
-                return 2;
-            } else if (courseTitle && courseTitle.toLowerCase().includes('soft skill')) {
                 return 1;
-            } else {
-                return 3;
             }
+
+            // Soft skill courses are 1.5 credits
+            if (courseType && courseType.toLowerCase().includes('soft skill')) {
+                return 1.5;
+            }
+
+            // For theory courses, check if there's a corresponding lab course
+            if (isTheoryCourse(courseCode)) {
+                const hasLabCourse = allCourses.some(course => 
+                    course.courseCode !== courseCode && // Not the same course
+                    course.courseCode.startsWith(courseCode.slice(0, -1)) && // Same base code
+                    isLabCourse(course.courseCode) // Is a lab course
+                );
+                
+                // If there's a lab course, theory course is likely 3 credits
+                // If no lab course, assume 4 credits as default for theory
+                return hasLabCourse ? 3 : 4;
+            }
+
+            // Default case: assume 3 credits
+            return 3;
         }
 
         function createCourseCard(course, gradeInfo, credits) {
@@ -864,8 +832,8 @@
                     difficulties[course.courseCode] : 0.5;
                 
                 difficultyControl = `
-                    <div class="difficulty-input" style="display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 4px 8px; border-radius: 8px; border: 1px solid #dee2e6; min-width: 160px;">
-                        <span style="color: #495057; font-size: 0.9em; white-space: nowrap;" title="Course Difficulty (0 = Easy, 0.5 = Normal, 1 = Hard)">Difficulty:</span>
+                    <div class="difficulty-input">
+                        <span title="Course Difficulty (0 = Easy, 0.5 = Normal, 1 = Hard)">Difficulty:</span>
                         <input type="number" 
                                class="course-difficulty" 
                                min="0" 
@@ -873,11 +841,26 @@
                                step="0.1" 
                                value="${currentDifficulty}"
                                data-course="${course.courseCode}"
-                               style="padding: 4px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9em; color: #495057; width: 60px; text-align: center;"
                                oninput="updateDifficulty(this)">
                     </div>
                 `;
             }
+
+            // Add credit control
+            const creditControl = `
+                <div class="credit-input" style="display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 4px 8px; border-radius: 8px; border: 1px solid #dee2e6;">
+                    <span style="color: #495057; font-size: 0.9em; white-space: nowrap;">Credits:</span>
+                    <input type="number" 
+                           class="course-credit" 
+                           min="1" 
+                           max="4" 
+                           step="0.5" 
+                           value="${credits}"
+                           data-course="${course.courseCode}"
+                           style="padding: 4px 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9em; color: #495057; width: 60px; text-align: center;"
+                           oninput="updateCredits(this)">
+                </div>
+            `;
             
             let scoreDetails = `
                 <div class="score-details">
@@ -923,6 +906,7 @@
                         </div>
                     </div>
                     <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                        ${creditControl}
                         ${difficultyControl}
                         <div class="grade-badge grade-${gradeInfo.grade}">
                             ${gradeInfo.grade} (${gradePoints[gradeInfo.grade]}.0)
@@ -960,6 +944,25 @@
             }, 300);
         }
 
+        function updateCredits(input) {
+            const courseCode = input.dataset.course;
+            let value = parseFloat(input.value);
+            
+            // Ensure value is between 1 and 4
+            value = Math.max(1, Math.min(4, value));
+            // Round to nearest 0.5
+            value = Math.round(value * 2) / 2;
+            input.value = value;
+            
+            // Store the credit value in localStorage
+            const userCredits = JSON.parse(localStorage.getItem('userDefinedCredits') || '{}');
+            userCredits[courseCode] = value;
+            localStorage.setItem('userDefinedCredits', JSON.stringify(userCredits));
+            
+            // Recalculate GPA without scrolling
+            calculateGPA(false);
+        }
+
         function loadSampleData() {
             const sampleData = `Sl.No. 	ClassNbr 	Course Code 	Course Title 	Course Type 	Course System 	Faculty 	Slot 	Course Mode
 1 	VL2024250502877 	BCSE301P 	Software Engineering Lab 	Lab Only 	CBCS 	DEEPA.K 	L27+L28 	LBC
@@ -994,6 +997,29 @@ Sl.No. 	Mark Title 	Max. Mark 	Weightage % 	Status 	Scored Mark 	Weightage Mark 
             // Clear stored difficulties when loading new sample data
             localStorage.removeItem('courseDifficulties');
             loadSampleData();
+
+            // Add keyboard shortcut listeners
+            document.addEventListener('keydown', function(e) {
+                const textarea = document.getElementById('marksInput');
+
+                // Handle Ctrl+Enter for calculating GPA
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    calculateGPA();
+                }
+
+                // Handle Ctrl+V for pasting
+                if (e.ctrlKey && e.key === 'v') {
+                    // Focus the textarea to ensure it receives the paste event
+                    textarea.focus();
+                }
+            });
+
+            // Add paste event listener to automatically calculate after paste
+            document.getElementById('marksInput').addEventListener('paste', function(e) {
+                // Short delay to ensure the paste content is in the textarea
+                setTimeout(calculateGPA, 100);
+            });
         };
     </script>
 </body>

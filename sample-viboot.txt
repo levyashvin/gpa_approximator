@@ -1,0 +1,82 @@
+Sl.No.	ClassNbr	Course Code	Course Title	Course Type	Course System	Faculty	Slot	Course Mode
+1	VL2024250502877	BCSE301P	Software Engineering Lab	Lab Only	CBCS	DEEPA.K	L27+L28	LBC
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Assessment - 1	10	10	Present	7.0	7	
+2	Assessment - 2	10	10	Present	8.0	8	
+3	Assessment - 3	10	10	Present	8.0	8	
+4	Assessment - 4	10	10	Present	8.0	8	
+5	Assessment - 5	20	20	Present	16.0	16	
+6	Final Assessment Test	50	40	Present	45.0	36	
+Total:	110.00	100.00		92.00	83.00	Lost Weightage Marks: 17.00
+2	VL2024250502235	BCSE301L	Software Engineering	Theory Only	CBCS	DEEPA.K	G2+TG2	CBL09
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Assignment - I	10	10	Present	9.0	9	
+2	Continuous Assessment Test - I	50	15	Present	36.0	10.8	
+3	Continuous Assessment Test - II	50	15	Present	26.0	7.8	
+4	Quiz - I	10	10	Present	7.0	7	
+5	Quiz - II	10	10	Present	8.0	8	
+6	Final Assessment Test	100	40	Present	70.0	28	
+Total:	230.00	100.00		156.00	70.60	Lost Weightage Marks: 29.40
+3	VL2024250504571	BCSE207P	Programming for Data Science Lab	Lab Only	CBCS	YUVARAJ N	L13+L14	LBC
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Assessment - 1	10	10	Present	9.0	9	
+2	Assessment - 2	10	10	Present	9.0	9	
+3	Assessment - 3	10	10	Present	7.0	7	
+4	Assessment - 4	10	10	Present	10.0	10	
+5	Assessment - 5	10	10	Present	9.0	9	
+6	Assessment - 6	10	10	Present	10.0	10	
+7	Final Assessment Test	50	40	Present	46.0	36.8	
+Total:	110.00	100.00		100.00	90.80	Lost Weightage Marks: 9.20
+4	VL2024250502082	BCSE207L	Programming for Data Science	Theory Only	CBCS	YUVARAJ N	B2	CBL09
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Assignment - I	10	10	Present	8.0	8	
+2	Continuous Assessment Test - I	50	15	Present	42.0	12.6	
+3	Continuous Assessment Test - II	50	15	Present	34.0	10.2	
+4	Quiz - I	10	10	Present	9.0	9	
+5	Quiz - II	10	10	Present	10.0	10	
+6	Final Assessment Test	100	40	Present	86.0	34.4	
+Total:	230.00	100.00		189.00	84.20	Lost Weightage Marks: 15.80
+5	VL2024250505078	BCSE309P	Cryptography and Network Security Lab	Lab Only	CBCS	SOMASUNDARAM S K	L5+L6	LBC
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Assessment - 1	10	10	Present	10.0	10	
+2	Assessment - 2	10	10	Present	10.0	10	
+3	Mid-term Assessment	20	20	Present	18.0	18	
+4	Assessment - 4	10	10	Present	10.0	10	
+5	Assessment - 5	10	10	Present	9.0	9	
+6	Final Assessment Test	50	40	Present	46.0	36.8	
+Total:	110.00	100.00		103.00	93.80	Lost Weightage Marks: 6.20
+6	VL2024250501895	BCSE309L	Cryptography and Network Security	Theory Only	CBCS	SOMASUNDARAM S K	E2+TE2	CBL09
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Digital Assignment - I	10	10	Present	9.5	9.5	
+2	Continuous Assessment Test - I	50	15	Present	39.0	11.7	
+3	Continuous Assessment Test - II	50	15	Present	37.0	11.1	
+4	Quiz - I	10	10	Present	8.0	8	requiz on 10.02.25
+5	Quiz - II	10	10	Present	7.0	7	
+6	Final Assessment Test	100	40	Present	90.0	36	
+Total:	230.00	100.00		190.50	83.30	Lost Weightage Marks: 16.70
+7	VL2024250500273	BSTS302P	Advanced Competitive Coding - II	Soft Skill	CBCS	ETHNUS (APT)	D2+TD2	SBC01
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Assessment - 1	15	15	Present	13.0	13	
+2	Assessment - 2	15	15	Present	14.0	14	
+3	Continuous Assessment Test - I	30	15	Present	30.0	15	
+4	Continuous Assessment Test - II	30	15	Present	30.0	15	
+5	Final Assessment Test	50	40	Present	44.0	35.2	
+Total:	140.00	100.00		131.00	92.20	Lost Weightage Marks: 7.80
+8	VL2024250504691	BFRE101L	French I	Theory Only	CBCS	COUMARAN G	C2	CBL09
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Digital Assignment (DA)	10	10	Present	9.0	9	
+2	Continuous Assessment Test - I	50	15	Present	26.5	7.95	
+3	Continuous Assessment Test - II	50	15	Present	42.5	12.75	
+4	Quiz - I	10	10	Present	10.0	10	
+5	Quiz - II	10	10	Present	9.0	9	
+6	Final Assessment Test	100	40	Present	73.0	29.2	
+Total:	230.00	100.00		170.00	77.90	Lost Weightage Marks: 22.10
+9	VL2024250501457	BCSE305L	Embedded Systems	Theory Only	CBCS	AJITHA D	A2+TA2	CBL09
+Sl.No.	Mark Title	Max. Mark	Weightage %	Status	Scored Mark	Weightage Mark	Remark
+1	Assignment - I	10	10	Present	6.0	6	
+2	Continuous Assessment Test - I	50	15	Present	34.0	10.2	
+3	Continuous Assessment Test - II	50	15	Present	35.0	10.5	
+4	Quiz - I	10	10	Present	7.0	7	
+5	Quiz - II	10	10	Present	7.0	7	
+6	Final Assessment Test	100	40	Present	77.0	30.8	
+Total:	230.00	100.00		166.00	71.50	Lost Weightage Marks: 28.50
